@@ -21,10 +21,10 @@ use std::{
     thread,
 };
 
+use crate::socket::RecvMsgCtrl;
 pub use socket::{
     SrtCongestionController, SrtKmState, SrtSocket, SrtSocketStatus, SrtTransmissionType,
 };
-use crate::socket::RecvMsgCtrl;
 
 type Result<T> = std::result::Result<T, SrtError>;
 
@@ -46,6 +46,7 @@ pub mod log {
         Info,
         Debug,
     }
+
     impl Level {
         fn as_cint(&self) -> std::os::raw::c_int {
             match self {
@@ -58,6 +59,7 @@ pub mod log {
             }
         }
     }
+
     pub fn set_level(level: Level) {
         unsafe { super::srt::srt_setloglevel(level.as_cint()) };
     }
@@ -88,9 +90,11 @@ impl SrtListener {
         let (socket, addr) = self.socket.accept()?;
         Ok((SrtStream { socket }, addr))
     }
+
     pub fn close(self) -> Result<()> {
         self.socket.close()
     }
+
     pub fn local_addr(&self) -> Result<SocketAddr> {
         self.socket.local_addr()
     }
@@ -110,132 +114,175 @@ impl SrtStream {
     pub fn local_addr(&self) -> Result<SocketAddr> {
         self.socket.local_addr()
     }
+
     pub fn peer_addr(&self) -> Result<SocketAddr> {
         self.socket.peer_addr()
     }
+
     pub fn close(self) -> Result<()> {
         self.socket.close()
     }
+
     pub fn set_time_drift_tracer(&self, enable: bool) -> Result<()> {
         self.socket.set_time_drift_tracer(enable)
     }
+
     pub fn set_input_bandwith(&self, bytes_per_sec: i64) -> Result<()> {
         self.socket.set_input_bandwith(bytes_per_sec)
     }
+
     pub fn set_recovery_bandwidth_overhead(&self, per_cent: i32) -> Result<()> {
         self.socket.set_recovery_bandwidth_overhead(per_cent)
     }
+
     pub fn set_receive_timeout(&self, msecs: i32) -> Result<()> {
         self.socket.set_receive_timeout(msecs)
     }
+
     pub fn set_send_timeout(&self, msecs: i32) -> Result<()> {
         self.socket.set_send_timeout(msecs)
     }
+
     pub fn get_flight_flag_size(&self) -> Result<i32> {
         self.socket.get_flight_flag_size()
     }
+
     pub fn get_input_bandwith(&self) -> Result<i64> {
         self.socket.get_input_bandwith()
     }
+
     pub fn get_ip_type_of_service(&self) -> Result<i32> {
         self.socket.get_ip_type_of_service()
     }
+
     pub fn get_initial_sequence_number(&self) -> Result<i32> {
         self.socket.get_initial_sequence_number()
     }
+
     pub fn get_ip_time_to_live(&self) -> Result<i32> {
         self.socket.get_ip_time_to_live()
     }
+
     pub fn get_ipv6_only(&self) -> Result<i32> {
         self.socket.get_ipv6_only()
     }
+
     pub fn get_km_refresh_rate(&self) -> Result<i32> {
         self.socket.get_km_refresh_rate()
     }
+
     pub fn get_km_preannounce(&self) -> Result<i32> {
         self.socket.get_km_preannounce()
     }
+
     pub fn get_linger(&self) -> Result<i32> {
         self.socket.get_linger()
     }
+
     pub fn get_max_reorder_tolerance(&self) -> Result<i32> {
         self.socket.get_max_reorder_tolerance()
     }
+
     pub fn get_max_bandwith(&self) -> Result<i64> {
         self.socket.get_max_bandwith()
     }
+
     pub fn get_mss(&self) -> Result<i32> {
         self.socket.get_mss()
     }
+
     pub fn get_nak_report(&self) -> Result<bool> {
         self.socket.get_nak_report()
     }
+
     pub fn get_encryption_key_length(&self) -> Result<i32> {
         self.socket.get_encryption_key_length()
     }
+
     pub fn get_peer_latency(&self) -> Result<i32> {
         self.socket.get_peer_latency()
     }
+
     pub fn get_peer_version(&self) -> Result<i32> {
         self.socket.get_peer_version()
     }
+
     pub fn get_receive_buffer(&self) -> Result<i32> {
         self.socket.get_receive_buffer()
     }
+
     pub fn get_receive_data(&self) -> Result<i32> {
         self.socket.get_receive_data()
     }
+
     pub fn get_receive_km_state(&self) -> Result<SrtKmState> {
         self.socket.get_receive_km_state()
     }
+
     pub fn get_receive_latency(&self) -> Result<i32> {
         self.socket.get_receive_latency()
     }
+
     pub fn get_receive_blocking(&self) -> Result<bool> {
         self.socket.get_receive_blocking()
     }
+
     pub fn get_receive_timeout(&self) -> Result<i32> {
         self.socket.get_receive_timeout()
     }
+
     pub fn get_rendezvous(&self) -> Result<bool> {
         self.socket.get_rendezvous()
     }
+
     pub fn get_reuse_address(&self) -> Result<bool> {
         self.socket.get_reuse_address()
     }
+
     pub fn get_send_buffer(&self) -> Result<i32> {
         self.socket.get_send_buffer()
     }
+
     pub fn get_send_data(&self) -> Result<i32> {
         self.socket.get_send_data()
     }
+
     pub fn get_send_km_state(&self) -> Result<SrtKmState> {
         self.socket.get_send_km_state()
     }
+
     pub fn get_send_blocking(&self) -> Result<bool> {
         self.socket.get_send_blocking()
     }
+
     pub fn get_send_timeout(&self) -> Result<i32> {
         self.socket.get_send_timeout()
     }
+
     pub fn get_socket_state(&self) -> Result<SrtSocketStatus> {
         self.socket.get_socket_state()
     }
+
     pub fn get_stream_id(&self) -> Result<String> {
         self.socket.get_stream_id()
     }
+
     pub fn get_too_late_packet_drop(&self) -> Result<bool> {
         self.socket.get_too_late_packet_drop()
     }
+
     pub fn get_timestamp_based_packet_delivery_mode(&self) -> Result<bool> {
         self.socket.get_timestamp_based_packet_delivery_mode()
     }
+
     pub fn get_udp_receive_buffer(&self) -> Result<i32> {
         self.socket.get_udp_receive_buffer()
     }
+
     pub fn get_udp_send_buffer(&self) -> Result<i32> {
         self.socket.get_udp_send_buffer()
     }
+
     pub fn get_srt_version(&self) -> Result<i32> {
         self.socket.get_srt_version()
     }
@@ -251,6 +298,7 @@ impl Write for SrtStream {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         Ok(self.socket.send(buf)?)
     }
+
     fn flush(&mut self) -> io::Result<()> {
         Ok(())
     }
@@ -273,6 +321,7 @@ impl SrtBoundSocket {
             socket: self.socket,
         })
     }
+
     pub fn local_addr(&self) -> Result<SocketAddr> {
         self.socket.local_addr()
     }
@@ -289,12 +338,14 @@ impl SrtBuilder {
         let socket = socket.bind(local)?;
         Ok(SrtBoundSocket { socket })
     }
+
     pub fn connect<A: ToSocketAddrs>(self, remote: A) -> Result<SrtStream> {
         let socket = SrtSocket::new()?;
         self.config_socket(&socket)?;
         socket.connect(remote)?;
         Ok(SrtStream { socket })
     }
+
     pub fn listen<A: ToSocketAddrs>(self, addr: A, backlog: i32) -> Result<SrtListener> {
         let socket = SrtSocket::new()?;
         self.config_socket(&socket)?;
@@ -302,6 +353,7 @@ impl SrtBuilder {
         socket.listen(backlog)?;
         Ok(SrtListener { socket })
     }
+
     pub fn rendezvous<A: ToSocketAddrs>(self, local: A, remote: A) -> Result<SrtStream> {
         let socket = SrtSocket::new()?;
         socket.set_rendezvous(true)?;
@@ -318,161 +370,199 @@ impl SrtBuilder {
             .push(SrtPreConnectOpt::BindToDevice(device.to_string()));
         self
     }
+
     pub fn set_connection_timeout(mut self, msecs: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::ConnTimeO(msecs));
         self
     }
+
     pub fn set_flight_flag_size(mut self, packets: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::FC(packets));
         self
     }
+
     pub fn set_ip_type_of_service(mut self, tos: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::IpTos(tos));
         self
     }
+
     pub fn set_ipv4_time_to_live(mut self, hops: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::IpTtl(hops));
         self
     }
+
     pub fn set_ipv6_only(mut self, value: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::Ipv6Only(value));
         self
     }
+
     pub fn set_km_refresh_rate(mut self, packets: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::KmRefreshRate(packets));
         self
     }
+
     pub fn set_km_preannounce(mut self, packets: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::KmPreAnnounce(packets));
         self
     }
+
     pub fn set_linger(mut self, secs: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::Linger(secs));
         self
     }
+
     pub fn set_max_reorder_tolerance(mut self, packets: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::LossMaxTtl(packets));
         self
     }
+
     pub fn set_max_bandwith(mut self, bytes_per_sec: i64) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::MaxBW(bytes_per_sec));
         self
     }
+
     pub fn set_message_api(mut self, enable: bool) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::MessageApi(enable));
         self
     }
+
     pub fn set_min_version(mut self, version: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::MinVersion(version));
         self
     }
+
     pub fn set_mss(mut self, bytes: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::Mss(bytes));
         self
     }
+
     pub fn set_nak_report(mut self, enable: bool) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::NakReport(enable));
         self
     }
+
     pub fn set_packet_filter(mut self, filter: String) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::PacketFilter(filter));
         self
     }
+
     pub fn set_passphrase(mut self, passphrase: String) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::Passphrase(passphrase));
         self
     }
+
     pub fn set_payload_size(mut self, bytes: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::PayloadSize(bytes));
         self
     }
+
     pub fn set_encryption_key_length(mut self, bytes: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::PBKeyLen(bytes));
         self
     }
+
     pub fn set_peer_idle_timeout(mut self, msecs: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::PeerIdleTimeO(msecs));
         self
     }
+
     pub fn set_peer_latency(mut self, msecs: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::PeerLatency(msecs));
         self
     }
+
     pub fn set_receive_buffer(mut self, bytes: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::RcvBuf(bytes));
         self
     }
+
     pub fn set_receive_latency(mut self, msecs: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::RcvLatency(msecs));
         self
     }
+
     pub fn set_rendezvous(mut self, enable: bool) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::Rendezvous(enable));
         self
     }
+
     pub fn set_retransmission_algorithm(mut self, reduced: bool) -> Self {
         self.opt_vec
             .push(SrtPreConnectOpt::RetrainsmitAlgo(reduced));
         self
     }
+
     pub fn set_reuse_address(mut self, reuse_address: bool) -> Self {
         self.opt_vec
             .push(SrtPreConnectOpt::ReuseAddr(reuse_address));
         self
     }
+
     pub fn set_live_congestion_controller(mut self) -> Self {
         self.opt_vec
             .push(SrtPreConnectOpt::Congestion(SrtCongestionController::Live));
         self
     }
+
     pub fn set_file_congestion_controller(mut self) -> Self {
         self.opt_vec
             .push(SrtPreConnectOpt::Congestion(SrtCongestionController::File));
         self
     }
+
     pub fn set_send_buffer(mut self, bytes: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::SndBuf(bytes));
         self
     }
+
     pub fn set_send_drop_delay(mut self, msecs: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::SndDropDelay(msecs));
         self
     }
+
     pub fn set_stream_id(mut self, id: String) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::StreamId(id));
         self
     }
+
     pub fn set_enforced_encryption(mut self, enforced: bool) -> Self {
         self.opt_vec
             .push(SrtPreConnectOpt::EnforcedEncryption(enforced));
         self
     }
+
     pub fn set_too_late_packet_drop(mut self, enable: bool) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::TlPktDrop(enable));
         self
     }
+
     pub fn set_live_transmission_type(mut self) -> Self {
         self.opt_vec
             .push(SrtPreConnectOpt::TransType(SrtTransmissionType::Live));
         self
     }
+
     pub fn set_file_transmission_type(mut self) -> Self {
         self.opt_vec
             .push(SrtPreConnectOpt::TransType(SrtTransmissionType::File));
         self
     }
+
     pub fn set_timestamp_based_packet_delivery_mode(mut self, enable: bool) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::TsbPdMode(enable));
         self
     }
+
     pub fn set_udp_send_buffer(mut self, bytes: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::UdpSndBuf(bytes));
         self
     }
+
     pub fn set_udp_receive_buffer(mut self, bytes: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::UdpRcvBuf(bytes));
         self
     }
+
     fn config_socket(self, socket: &SrtSocket) -> Result<()> {
         for opt in self.opt_vec {
             match opt {
@@ -505,6 +595,7 @@ impl SrtBuilder {
                 SrtPreConnectOpt::RetrainsmitAlgo(value) => {
                     socket.set_retransmission_algorithm(value)?
                 }
+
                 SrtPreConnectOpt::ReuseAddr(value) => socket.set_reuse_address(value)?,
                 SrtPreConnectOpt::Congestion(value) => socket.set_congestion_controller(value)?,
                 SrtPreConnectOpt::SndBuf(value) => socket.set_send_buffer(value)?,
@@ -513,15 +604,18 @@ impl SrtBuilder {
                 SrtPreConnectOpt::EnforcedEncryption(value) => {
                     socket.set_enforced_encryption(value)?
                 }
+
                 SrtPreConnectOpt::TlPktDrop(value) => socket.set_too_late_packet_drop(value)?,
                 SrtPreConnectOpt::TransType(value) => socket.set_transmission_type(value)?,
                 SrtPreConnectOpt::TsbPdMode(value) => {
                     socket.set_timestamp_based_packet_delivery_mode(value)?
                 }
+
                 SrtPreConnectOpt::UdpSndBuf(value) => socket.set_udp_receive_buffer(value)?,
                 SrtPreConnectOpt::UdpRcvBuf(value) => socket.set_udp_send_buffer(value)?,
             }
         }
+
         Ok(())
     }
 }
@@ -534,132 +628,173 @@ impl SrtAsyncStream {
     pub fn local_addr(&self) -> Result<SocketAddr> {
         self.socket.local_addr()
     }
+
     pub fn peer_addr(&self) -> Result<SocketAddr> {
         self.socket.peer_addr()
     }
+
     pub fn set_time_drift_tracer(&self, enable: bool) -> Result<()> {
         self.socket.set_time_drift_tracer(enable)
     }
+
     pub fn set_input_bandwith(&self, bytes_per_sec: i64) -> Result<()> {
         self.socket.set_input_bandwith(bytes_per_sec)
     }
+
     pub fn set_recovery_bandwidth_overhead(&self, per_cent: i32) -> Result<()> {
         self.socket.set_recovery_bandwidth_overhead(per_cent)
     }
+
     pub fn get_flight_flag_size(&self) -> Result<i32> {
         self.socket.get_flight_flag_size()
     }
+
     pub fn get_input_bandwith(&self) -> Result<i64> {
         self.socket.get_input_bandwith()
     }
+
     pub fn get_ip_type_of_service(&self) -> Result<i32> {
         self.socket.get_ip_type_of_service()
     }
+
     pub fn get_initial_sequence_number(&self) -> Result<i32> {
         self.socket.get_initial_sequence_number()
     }
+
     pub fn get_ip_time_to_live(&self) -> Result<i32> {
         self.socket.get_ip_time_to_live()
     }
+
     pub fn get_ipv6_only(&self) -> Result<i32> {
         self.socket.get_ipv6_only()
     }
+
     pub fn get_km_refresh_rate(&self) -> Result<i32> {
         self.socket.get_km_refresh_rate()
     }
+
     pub fn get_km_preannounce(&self) -> Result<i32> {
         self.socket.get_km_preannounce()
     }
+
     pub fn get_linger(&self) -> Result<i32> {
         self.socket.get_linger()
     }
+
     pub fn get_max_reorder_tolerance(&self) -> Result<i32> {
         self.socket.get_max_reorder_tolerance()
     }
+
     pub fn get_max_bandwith(&self) -> Result<i64> {
         self.socket.get_max_bandwith()
     }
+
     pub fn get_mss(&self) -> Result<i32> {
         self.socket.get_mss()
     }
+
     pub fn get_nak_report(&self) -> Result<bool> {
         self.socket.get_nak_report()
     }
+
     pub fn get_encryption_key_length(&self) -> Result<i32> {
         self.socket.get_encryption_key_length()
     }
+
     pub fn get_peer_latency(&self) -> Result<i32> {
         self.socket.get_peer_latency()
     }
+
     pub fn get_peer_version(&self) -> Result<i32> {
         self.socket.get_peer_version()
     }
+
     pub fn get_receive_buffer(&self) -> Result<i32> {
         self.socket.get_receive_buffer()
     }
+
     pub fn get_receive_data(&self) -> Result<i32> {
         self.socket.get_receive_data()
     }
+
     pub fn get_receive_km_state(&self) -> Result<SrtKmState> {
         self.socket.get_receive_km_state()
     }
+
     pub fn get_receive_latency(&self) -> Result<i32> {
         self.socket.get_receive_latency()
     }
+
     pub fn get_receive_blocking(&self) -> Result<bool> {
         self.socket.get_receive_blocking()
     }
+
     pub fn get_receive_timeout(&self) -> Result<i32> {
         self.socket.get_receive_timeout()
     }
+
     pub fn get_rendezvous(&self) -> Result<bool> {
         self.socket.get_rendezvous()
     }
+
     pub fn get_reuse_address(&self) -> Result<bool> {
         self.socket.get_reuse_address()
     }
+
     pub fn get_send_buffer(&self) -> Result<i32> {
         self.socket.get_send_buffer()
     }
+
     pub fn get_send_data(&self) -> Result<i32> {
         self.socket.get_send_data()
     }
+
     pub fn get_send_km_state(&self) -> Result<SrtKmState> {
         self.socket.get_send_km_state()
     }
+
     pub fn get_send_blocking(&self) -> Result<bool> {
         self.socket.get_send_blocking()
     }
+
     pub fn get_send_timeout(&self) -> Result<i32> {
         self.socket.get_send_timeout()
     }
+
     pub fn get_socket_state(&self) -> Result<SrtSocketStatus> {
         self.socket.get_socket_state()
     }
+
     pub fn get_stream_id(&self) -> Result<String> {
         self.socket.get_stream_id()
     }
+
     pub fn get_too_late_packet_drop(&self) -> Result<bool> {
         self.socket.get_too_late_packet_drop()
     }
+
     pub fn get_timestamp_based_packet_delivery_mode(&self) -> Result<bool> {
         self.socket.get_timestamp_based_packet_delivery_mode()
     }
+
     pub fn get_udp_receive_buffer(&self) -> Result<i32> {
         self.socket.get_udp_receive_buffer()
     }
+
     pub fn get_udp_send_buffer(&self) -> Result<i32> {
         self.socket.get_udp_send_buffer()
     }
+
     pub fn get_srt_version(&self) -> Result<i32> {
         self.socket.get_srt_version()
     }
+
     pub fn recvmsg2<T: AsMut<[u8]>>(&self, buf: T) -> RecvMsg2<T> {
         RecvMsg2 {
             state: Some(RecvMsg2Inner {
                 socket: self.socket,
                 buf,
-            })
+            }),
         }
     }
 }
@@ -667,19 +802,24 @@ impl SrtAsyncStream {
 pub struct RecvMsg2<T> {
     state: Option<RecvMsg2Inner<T>>,
 }
+
 struct RecvMsg2Inner<T> {
     socket: SrtSocket,
     buf: T,
 }
+
 impl<T> Future for RecvMsg2<T>
-    where
-        T: AsMut<[u8]> + std::marker::Unpin,
+where
+    T: AsMut<[u8]> + std::marker::Unpin,
 {
     type Output = Result<(usize, RecvMsgCtrl)>;
 
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        let ref mut inner =
-            self.get_mut().state.as_mut().expect("RecvMsg2 polled after completion");
+        let ref mut inner = self
+            .get_mut()
+            .state
+            .as_mut()
+            .expect("RecvMsg2 polled after completion");
         match inner.socket.recvmsg2(inner.buf.as_mut()) {
             Ok((size, msg_ctrl)) => Poll::Ready(Ok((size, msg_ctrl))),
             Err(e) => match e {
@@ -694,6 +834,7 @@ impl<T> Future for RecvMsg2<T>
                     });
                     Poll::Pending
                 }
+
                 e => Poll::Ready(Err(e.into())),
             },
         }
@@ -720,6 +861,7 @@ impl AsyncRead for SrtAsyncStream {
                     });
                     Poll::Pending
                 }
+
                 e => Poll::Ready(Err(e.into())),
             },
         }
@@ -751,12 +893,14 @@ impl AsyncWrite for SrtAsyncStream {
                             Poll::Pending
                         }
                     }
+
                     Err(e) => Poll::Ready(Err(e.into())),
                 },
                 e => Poll::Ready(Err(e.into())),
             },
         }
     }
+
     fn poll_flush(
         self: Pin<&mut Self>,
         cx: &mut Context<'_>,
@@ -777,9 +921,11 @@ impl AsyncWrite for SrtAsyncStream {
                     Poll::Pending
                 }
             }
+
             Err(e) => Poll::Ready(Err(e.into())),
         }
     }
+
     fn poll_close(
         self: Pin<&mut Self>,
         cx: &mut Context<'_>,
@@ -803,6 +949,7 @@ impl AsyncWrite for SrtAsyncStream {
                     Poll::Pending
                 }
             }
+
             Err(e) => Poll::Ready(Err(e.into())),
         }
     }
@@ -824,9 +971,11 @@ impl SrtAsyncListener {
             socket: self.socket,
         }
     }
+
     pub fn close(self) -> Result<()> {
         self.socket.close()
     }
+
     pub fn local_addr(&self) -> Result<SocketAddr> {
         self.socket.local_addr()
     }
@@ -857,6 +1006,7 @@ impl Future for AcceptFuture {
                     Poll::Ready(Ok((SrtAsyncStream { socket }, addr)))
                 }
             }
+
             Err(e) => match e {
                 SrtError::AsyncRcv => {
                     let waker = cx.waker().clone();
@@ -869,6 +1019,7 @@ impl Future for AcceptFuture {
                     });
                     Poll::Pending
                 }
+
                 e => Poll::Ready(Err(e)),
             },
         }
@@ -905,6 +1056,7 @@ impl Future for ConnectFuture {
                         });
                         Poll::Pending
                     }
+
                     r => Poll::Ready(Err(SrtError::ConnRej(r))),
                 },
                 SrtSocketStatus::Closing => Poll::Ready(Err(SrtError::Closed)),
@@ -915,9 +1067,10 @@ impl Future for ConnectFuture {
         }
     }
 }
+
 impl Drop for ConnectFuture {
     fn drop(&mut self) {
-        self.socket.take().map(|sock| sock.close() );
+        self.socket.take().map(|sock| sock.close());
     }
 }
 
@@ -933,6 +1086,7 @@ impl SrtBoundAsyncSocket {
             socket: Some(self.socket),
         })
     }
+
     pub fn local_addr(&self) -> Result<SocketAddr> {
         self.socket.local_addr()
     }
@@ -950,14 +1104,18 @@ impl SrtAsyncBuilder {
         let socket = socket.bind(local)?;
         Ok(SrtBoundAsyncSocket { socket })
     }
+
     pub fn connect<A: ToSocketAddrs>(self, remote: A) -> Result<ConnectFuture> {
         let socket = SrtSocket::new()?;
         self.config_socket(&socket)?;
         socket.set_send_blocking(false)?;
         socket.connect(remote)?;
         socket.set_receive_blocking(false)?;
-        Ok(ConnectFuture { socket: Some(socket) })
+        Ok(ConnectFuture {
+            socket: Some(socket),
+        })
     }
+
     pub fn listen<A: ToSocketAddrs>(self, addr: A, backlog: i32) -> Result<SrtAsyncListener> {
         let socket = SrtSocket::new()?;
         self.config_socket(&socket)?;
@@ -965,6 +1123,7 @@ impl SrtAsyncBuilder {
         socket.listen(backlog)?; // Still synchronous
         Ok(SrtAsyncListener { socket })
     }
+
     pub fn rendezvous<A: ToSocketAddrs>(self, local: A, remote: A) -> Result<ConnectFuture> {
         let socket = SrtSocket::new()?;
         socket.set_rendezvous(true)?;
@@ -972,7 +1131,9 @@ impl SrtAsyncBuilder {
         socket.set_send_blocking(false)?;
         socket.rendezvous(local, remote)?;
         socket.set_receive_blocking(false)?;
-        Ok(ConnectFuture { socket: Some(socket) })
+        Ok(ConnectFuture {
+            socket: Some(socket),
+        })
     }
 }
 
@@ -983,161 +1144,199 @@ impl SrtAsyncBuilder {
             .push(SrtPreConnectOpt::BindToDevice(device.to_string()));
         self
     }
+
     pub fn set_connection_timeout(mut self, msecs: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::ConnTimeO(msecs));
         self
     }
+
     pub fn set_flight_flag_size(mut self, packets: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::FC(packets));
         self
     }
+
     pub fn set_ip_type_of_service(mut self, tos: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::IpTos(tos));
         self
     }
+
     pub fn set_ipv4_time_to_live(mut self, hops: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::IpTtl(hops));
         self
     }
+
     pub fn set_ipv6_only(mut self, value: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::Ipv6Only(value));
         self
     }
+
     pub fn set_km_refresh_rate(mut self, packets: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::KmRefreshRate(packets));
         self
     }
+
     pub fn set_km_preannounce(mut self, packets: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::KmPreAnnounce(packets));
         self
     }
+
     pub fn set_linger(mut self, secs: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::Linger(secs));
         self
     }
+
     pub fn set_max_reorder_tolerance(mut self, packets: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::LossMaxTtl(packets));
         self
     }
+
     pub fn set_max_bandwith(mut self, bytes_per_sec: i64) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::MaxBW(bytes_per_sec));
         self
     }
+
     pub fn set_message_api(mut self, enable: bool) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::MessageApi(enable));
         self
     }
+
     pub fn set_min_version(mut self, version: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::MinVersion(version));
         self
     }
+
     pub fn set_mss(mut self, bytes: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::Mss(bytes));
         self
     }
+
     pub fn set_nak_report(mut self, enable: bool) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::NakReport(enable));
         self
     }
+
     pub fn set_packet_filter(mut self, filter: String) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::PacketFilter(filter));
         self
     }
+
     pub fn set_passphrase(mut self, passphrase: String) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::Passphrase(passphrase));
         self
     }
+
     pub fn set_payload_size(mut self, bytes: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::PayloadSize(bytes));
         self
     }
+
     pub fn set_encryption_key_length(mut self, bytes: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::PBKeyLen(bytes));
         self
     }
+
     pub fn set_peer_idle_timeout(mut self, msecs: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::PeerIdleTimeO(msecs));
         self
     }
+
     pub fn set_peer_latency(mut self, msecs: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::PeerLatency(msecs));
         self
     }
+
     pub fn set_receive_buffer(mut self, bytes: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::RcvBuf(bytes));
         self
     }
+
     pub fn set_receive_latency(mut self, msecs: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::RcvLatency(msecs));
         self
     }
+
     pub fn set_rendezvous(mut self, enable: bool) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::Rendezvous(enable));
         self
     }
+
     pub fn set_retransmission_algorithm(mut self, reduced: bool) -> Self {
         self.opt_vec
             .push(SrtPreConnectOpt::RetrainsmitAlgo(reduced));
         self
     }
+
     pub fn set_reuse_address(mut self, reuse_address: bool) -> Self {
         self.opt_vec
             .push(SrtPreConnectOpt::ReuseAddr(reuse_address));
         self
     }
+
     pub fn set_live_congestion_controller(mut self) -> Self {
         self.opt_vec
             .push(SrtPreConnectOpt::Congestion(SrtCongestionController::Live));
         self
     }
+
     pub fn set_file_congestion_controller(mut self) -> Self {
         self.opt_vec
             .push(SrtPreConnectOpt::Congestion(SrtCongestionController::File));
         self
     }
+
     pub fn set_send_buffer(mut self, bytes: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::SndBuf(bytes));
         self
     }
+
     pub fn set_send_drop_delay(mut self, msecs: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::SndDropDelay(msecs));
         self
     }
+
     pub fn set_stream_id(mut self, id: String) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::StreamId(id));
         self
     }
+
     pub fn set_enforced_encryption(mut self, enforced: bool) -> Self {
         self.opt_vec
             .push(SrtPreConnectOpt::EnforcedEncryption(enforced));
         self
     }
+
     pub fn set_too_late_packet_drop(mut self, enable: bool) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::TlPktDrop(enable));
         self
     }
+
     pub fn set_live_transmission_type(mut self) -> Self {
         self.opt_vec
             .push(SrtPreConnectOpt::TransType(SrtTransmissionType::Live));
         self
     }
+
     pub fn set_file_transmission_type(mut self) -> Self {
         self.opt_vec
             .push(SrtPreConnectOpt::TransType(SrtTransmissionType::File));
         self
     }
+
     pub fn set_timestamp_based_packet_delivery_mode(mut self, enable: bool) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::TsbPdMode(enable));
         self
     }
+
     pub fn set_udp_send_buffer(mut self, bytes: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::UdpSndBuf(bytes));
         self
     }
+
     pub fn set_udp_receive_buffer(mut self, bytes: i32) -> Self {
         self.opt_vec.push(SrtPreConnectOpt::UdpRcvBuf(bytes));
         self
     }
+
     fn config_socket(self, socket: &SrtSocket) -> Result<()> {
         for opt in self.opt_vec {
             match opt {
@@ -1170,6 +1369,7 @@ impl SrtAsyncBuilder {
                 SrtPreConnectOpt::RetrainsmitAlgo(value) => {
                     socket.set_retransmission_algorithm(value)?
                 }
+
                 SrtPreConnectOpt::ReuseAddr(value) => socket.set_reuse_address(value)?,
                 SrtPreConnectOpt::Congestion(value) => socket.set_congestion_controller(value)?,
                 SrtPreConnectOpt::SndBuf(value) => socket.set_send_buffer(value)?,
@@ -1178,15 +1378,18 @@ impl SrtAsyncBuilder {
                 SrtPreConnectOpt::EnforcedEncryption(value) => {
                     socket.set_enforced_encryption(value)?
                 }
+
                 SrtPreConnectOpt::TlPktDrop(value) => socket.set_too_late_packet_drop(value)?,
                 SrtPreConnectOpt::TransType(value) => socket.set_transmission_type(value)?,
                 SrtPreConnectOpt::TsbPdMode(value) => {
                     socket.set_timestamp_based_packet_delivery_mode(value)?
                 }
+
                 SrtPreConnectOpt::UdpSndBuf(value) => socket.set_udp_receive_buffer(value)?,
                 SrtPreConnectOpt::UdpRcvBuf(value) => socket.set_udp_send_buffer(value)?,
             }
         }
+
         Ok(())
     }
 }
@@ -1250,6 +1453,7 @@ impl Epoll {
             })
         }
     }
+
     fn add(&mut self, socket: &SrtSocket, event: &srt::SRT_EPOLL_OPT) -> Result<()> {
         let result = unsafe {
             srt::srt_epoll_add_usock(
@@ -1261,16 +1465,20 @@ impl Epoll {
         if result == 0 {
             self.num_sock += 1;
         }
+
         error::handle_result((), result)
     }
+
     #[allow(dead_code)]
     fn remove(&mut self, socket: &SrtSocket) -> Result<()> {
         let result = unsafe { srt::srt_epoll_remove_usock(self.id, socket.id) };
         if result == 0 {
             self.num_sock -= 1;
         }
+
         error::handle_result((), result)
     }
+
     #[allow(dead_code)]
     fn update(&self, socket: &SrtSocket, event: &srt::SRT_EPOLL_OPT) -> Result<()> {
         let result = unsafe {
@@ -1282,6 +1490,7 @@ impl Epoll {
         };
         error::handle_result((), result)
     }
+
     fn wait(&self, timeout: i64) -> Result<Vec<(SrtSocket, srt::SRT_EPOLL_OPT)>> {
         let mut array = vec![srt::SRT_EPOLL_EVENT { fd: 0, events: 0 }; self.num_sock];
         let result = unsafe {
@@ -1307,12 +1516,14 @@ impl Epoll {
                 .collect())
         }
     }
+
     #[allow(dead_code)]
     fn clear(&mut self) -> Result<()> {
         let result = unsafe { srt::srt_epoll_clear_usocks(self.id) };
         if result == 0 {
             self.num_sock = 0;
         }
+
         error::handle_result((), result)
     }
 }
@@ -1347,6 +1558,7 @@ mod tests {
         block_on(test_ipv6_connect_accept_async());
         srt::cleanup().expect("failed cleanup()");
     }
+
     fn test_ipv6_connect_accept() {
         let (tx, rx) = mpsc::channel::<SocketAddr>();
         thread::spawn(move || {
@@ -1362,7 +1574,11 @@ mod tests {
             assert!(listen.close().is_ok());
         });
         let addr = rx.recv().expect("fail recv through mpsc channel");
-        println!("{}", addr);
+        println!(
+            "{}
+            ",
+            addr
+        );
         let mut connect = srt::builder()
             .set_file_transmission_type()
             .connect(addr)
@@ -1375,6 +1591,7 @@ mod tests {
         );
         assert!(connect.close().is_ok());
     }
+
     async fn test_ipv6_connect_accept_async() {
         let (tx, rx) = mpsc::channel::<SocketAddr>();
         let listen_task = async move {
@@ -1407,6 +1624,7 @@ mod tests {
         };
         future::join(listen_task, connect_task).await;
     }
+
     #[test]
     fn test_ipv4_connect_accept() {
         srt::startup().expect("failed startup");
@@ -1437,6 +1655,7 @@ mod tests {
         assert!(connect.close().is_ok());
         srt::cleanup().expect("failed cleanup()");
     }
+
     #[test]
     fn test_ipv4_connect_accept_async() {
         srt::startup().expect("failed startup");
@@ -1509,20 +1728,21 @@ mod tests {
         assert!(two.close().is_ok());
         srt::cleanup().expect("failed cleanup");
     }
+
     #[test]
     fn test_ipv4_rendezvous() {
         srt::startup().expect("failed startup");
         thread::spawn(move || {
             let mut one = srt::builder()
                 .set_file_transmission_type()
-                .rendezvous("127.0.0.1:10000", "127.0.0.2:20000")
+                .rendezvous("127.0.0.1:10000", "127.0.0.1:20000")
                 .expect("fail rendezvous()");
             one.write_all(b"testing").expect("fail write()");
             assert!(one.close().is_ok());
         });
         let mut two = srt::builder()
             .set_file_transmission_type()
-            .rendezvous("127.0.0.2:20000", "127.0.0.1:10000")
+            .rendezvous("127.0.0.1:20000", "127.0.0.1:10000")
             .expect("fail rendezvous()");
         let mut buf = Vec::new();
         two.read_to_end(&mut buf).expect("fail read()");
@@ -1533,6 +1753,7 @@ mod tests {
         assert!(two.close().is_ok());
         srt::cleanup().expect("failed cleanup");
     }
+
     #[test]
     fn test_ipv4_rendezvous_async() {
         srt::startup().expect("failed startup");
