@@ -1725,7 +1725,7 @@ mod tests {
         let two = srt::builder()
             .set_file_transmission_type()
             .set_rendezvous(true)
-            .bind("127.0.0.2:0")
+            .bind("127.0.0.1:0")
             .expect("fail bind()");
         let local = two.local_addr().expect("fail local_addr()");
         tx_2.send(local).expect("fail send through mpsc channel");
