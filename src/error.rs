@@ -8,7 +8,7 @@ use std::{
     os::raw::c_int,
 };
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SrtError {
     Unknown,
     Success,
@@ -222,7 +222,7 @@ fn error_msg(err: &SrtError) -> String {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SrtRejectReason {
     Unknown,    // initial set when in progress
     System,     // broken due to system function error

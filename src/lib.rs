@@ -38,6 +38,7 @@ pub fn startup() -> Result<()> {
 }
 
 pub mod log {
+    #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
     pub enum Level {
         Crit,
         Err,
@@ -81,6 +82,7 @@ pub fn async_builder() -> SrtAsyncBuilder {
     SrtAsyncBuilder { opt_vec }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SrtListener {
     socket: SrtSocket,
 }
@@ -106,6 +108,7 @@ impl Drop for SrtListener {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SrtStream {
     socket: SrtSocket,
 }
@@ -310,6 +313,7 @@ impl Drop for SrtStream {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SrtBoundSocket {
     socket: SrtSocket,
 }
@@ -327,6 +331,7 @@ impl SrtBoundSocket {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SrtBuilder {
     opt_vec: Vec<SrtPreConnectOpt>,
 }
@@ -620,6 +625,7 @@ impl SrtBuilder {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SrtAsyncStream {
     socket: SrtSocket,
 }
@@ -961,6 +967,7 @@ impl Drop for SrtAsyncStream {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SrtAsyncListener {
     socket: SrtSocket,
 }
@@ -987,6 +994,7 @@ impl Drop for SrtAsyncListener {
     }
 }
 
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct AcceptFuture {
     socket: SrtSocket,
 }
@@ -1026,6 +1034,7 @@ impl Future for AcceptFuture {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ConnectFuture {
     socket: Option<SrtSocket>,
 }
@@ -1074,6 +1083,7 @@ impl Drop for ConnectFuture {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SrtBoundAsyncSocket {
     socket: SrtSocket,
 }
@@ -1092,6 +1102,7 @@ impl SrtBoundAsyncSocket {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SrtAsyncBuilder {
     opt_vec: Vec<SrtPreConnectOpt>,
 }
@@ -1394,7 +1405,7 @@ impl SrtAsyncBuilder {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 enum SrtPreConnectOpt {
     #[cfg(target_family = "unix")]
     BindToDevice(String),
@@ -1436,6 +1447,7 @@ enum SrtPreConnectOpt {
     UdpRcvBuf(i32),
 }
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 struct Epoll {
     id: i32,
     num_sock: usize,

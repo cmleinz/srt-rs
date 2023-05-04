@@ -23,6 +23,7 @@ use winapi::um::winsock2::linger;
 
 type Result<T> = std::result::Result<T, SrtError>;
 
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum SrtSocketStatus {
     Init,
     Opened,
@@ -35,7 +36,7 @@ pub enum SrtSocketStatus {
     NonExist,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct SrtSocket {
     pub id: i32,
 }
@@ -1358,7 +1359,7 @@ impl SrtSocket {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum SrtKmState {
     Unsecured,
     Securing,
@@ -1368,14 +1369,14 @@ pub enum SrtKmState {
 }
 
 #[allow(dead_code)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum SrtTransmissionType {
     Live,
     File,
     Invalid,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum SrtCongestionController {
     Live,
     File,
