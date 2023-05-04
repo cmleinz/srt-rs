@@ -71,17 +71,6 @@ pub fn cleanup() -> Result<()> {
     error::handle_result((), result)
 }
 
-pub fn builder() -> SrtBuilder {
-    SrtBuilder {
-        opt_vec: Vec::new(),
-    }
-}
-
-pub fn async_builder() -> SrtAsyncBuilder {
-    let opt_vec = [SrtPreConnectOpt::RcvSyn(false)].to_vec();
-    SrtAsyncBuilder { opt_vec }
-}
-
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SrtListener {
     socket: SrtSocket,
@@ -336,7 +325,19 @@ pub struct SrtBuilder {
     opt_vec: Vec<SrtPreConnectOpt>,
 }
 
+impl Default for SrtBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SrtBuilder {
+    pub fn new() -> Self {
+        Self {
+            opt_vec: Vec::new(),
+        }
+    }
+
     pub fn bind<A: ToSocketAddrs>(self, local: A) -> Result<SrtBoundSocket> {
         let socket = SrtSocket::new()?;
         self.config_socket(&socket)?;
@@ -1107,7 +1108,19 @@ pub struct SrtAsyncBuilder {
     opt_vec: Vec<SrtPreConnectOpt>,
 }
 
+impl Default for SrtAsyncBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SrtAsyncBuilder {
+    pub fn new() -> Self {
+        SrtAsyncBuilder {
+            opt_vec: vec![SrtPreConnectOpt::RcvSyn(false)],
+        }
+    }
+
     pub fn bind<A: ToSocketAddrs>(self, local: A) -> Result<SrtBoundAsyncSocket> {
         let socket = SrtSocket::new()?;
         self.config_socket(&socket)?;
@@ -1550,7 +1563,7 @@ impl Drop for Epoll {
 
 #[cfg(test)]
 mod tests {
-    use crate as srt;
+    use crate::{self as srt, SrtAsyncBuilder, SrtBuilder};
     use futures::{
         executor::block_on,
         future,
@@ -1574,7 +1587,7 @@ mod tests {
     fn test_ipv6_connect_accept() {
         let (tx, rx) = mpsc::channel::<SocketAddr>();
         thread::spawn(move || {
-            let listen = srt::builder()
+            let listen = SrtBuilder::new()
                 .set_file_transmission_type()
                 .listen("[::1]:0", 1)
                 .expect("fail listen()");
@@ -1591,7 +1604,7 @@ mod tests {
             ",
             addr
         );
-        let mut connect = srt::builder()
+        let mut connect = SrtBuilder::new()
             .set_file_transmission_type()
             .connect(addr)
             .expect("fail connect()");
@@ -1607,7 +1620,7 @@ mod tests {
     async fn test_ipv6_connect_accept_async() {
         let (tx, rx) = mpsc::channel::<SocketAddr>();
         let listen_task = async move {
-            let listen = srt::async_builder()
+            let listen = SrtAsyncBuilder::new()
                 .set_file_transmission_type()
                 .listen("[::1]:0", 1)
                 .expect("fail listen()");
@@ -1620,7 +1633,7 @@ mod tests {
         };
         let connect_task = async move {
             let addr = rx.recv().expect("fail recv through mpsc channel");
-            let mut connect = srt::async_builder()
+            let mut connect = SrtAsyncBuilder::new()
                 .set_file_transmission_type()
                 .connect(addr)
                 .expect("fail start connect")
@@ -1642,7 +1655,7 @@ mod tests {
         srt::startup().expect("failed startup");
         let (tx, rx) = mpsc::channel::<SocketAddr>();
         thread::spawn(move || {
-            let listen = srt::builder()
+            let listen = SrtBuilder::new()
                 .set_file_transmission_type()
                 .listen("127.0.0.1:0", 1)
                 .expect("fail listen()");
@@ -1654,7 +1667,7 @@ mod tests {
             assert!(listen.close().is_ok());
         });
         let addr = rx.recv().expect("fail recv through mpsc channel");
-        let mut connect = srt::builder()
+        let mut connect = SrtBuilder::new()
             .set_file_transmission_type()
             .connect(addr)
             .expect("fail connect()");
@@ -1673,7 +1686,7 @@ mod tests {
         srt::startup().expect("failed startup");
         let (tx, rx) = mpsc::channel::<SocketAddr>();
         let listen_task = async move {
-            let listen = srt::async_builder()
+            let listen = SrtAsyncBuilder::new()
                 .set_file_transmission_type()
                 .listen("127.0.0.1:0", 1)
                 .expect("fail listen()");
@@ -1686,7 +1699,7 @@ mod tests {
         };
         let connect_task = async move {
             let addr = rx.recv().expect("fail recv through mpsc channel");
-            let mut connect = srt::async_builder()
+            let mut connect = SrtAsyncBuilder::new()
                 .set_file_transmission_type()
                 .connect(addr)
                 .expect("fail start connect")
@@ -1710,7 +1723,7 @@ mod tests {
         let (tx_1, rx_1) = mpsc::channel::<SocketAddr>();
         let (tx_2, rx_2) = mpsc::channel::<SocketAddr>();
         thread::spawn(move || {
-            let one = srt::builder()
+            let one = SrtBuilder::new()
                 .set_file_transmission_type()
                 .set_rendezvous(true)
                 .bind("127.0.0.1:0")
@@ -1722,7 +1735,7 @@ mod tests {
             one.write_all(b"testing").expect("fail write()");
             assert!(one.close().is_ok());
         });
-        let two = srt::builder()
+        let two = SrtBuilder::new()
             .set_file_transmission_type()
             .set_rendezvous(true)
             .bind("127.0.0.1:0")
@@ -1745,14 +1758,14 @@ mod tests {
     fn test_ipv4_rendezvous() {
         srt::startup().expect("failed startup");
         thread::spawn(move || {
-            let mut one = srt::builder()
+            let mut one = SrtBuilder::new()
                 .set_file_transmission_type()
                 .rendezvous("127.0.0.1:10000", "127.0.0.1:20000")
                 .expect("fail rendezvous()");
             one.write_all(b"testing").expect("fail write()");
             assert!(one.close().is_ok());
         });
-        let mut two = srt::builder()
+        let mut two = SrtBuilder::new()
             .set_file_transmission_type()
             .rendezvous("127.0.0.1:20000", "127.0.0.1:10000")
             .expect("fail rendezvous()");
@@ -1770,7 +1783,7 @@ mod tests {
     fn test_ipv4_rendezvous_async() {
         srt::startup().expect("failed startup");
         let one_task = async move {
-            let mut one = srt::async_builder()
+            let mut one = SrtAsyncBuilder::new()
                 .set_file_transmission_type()
                 .rendezvous("127.0.0.1:10000", "127.0.0.1:20000")
                 .expect("fail start rendezvous")
@@ -1780,7 +1793,7 @@ mod tests {
             assert!(one.close().await.is_ok());
         };
         let two_task = async move {
-            let mut two = srt::async_builder()
+            let mut two = SrtAsyncBuilder::new()
                 .set_file_transmission_type()
                 .rendezvous("127.0.0.1:20000", "127.0.0.1:10000")
                 .expect("fail start rendezvous")
