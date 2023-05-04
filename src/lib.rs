@@ -104,7 +104,7 @@ impl SrtListener {
 
 impl Drop for SrtListener {
     fn drop(&mut self) {
-        if let Err(_) = self.socket.close() {}
+        if self.socket.close().is_err() {}
     }
 }
 
@@ -309,7 +309,7 @@ impl Write for SrtStream {
 
 impl Drop for SrtStream {
     fn drop(&mut self) {
-        if let Err(_) = self.socket.close() {}
+        if self.socket.close().is_err() {}
     }
 }
 
@@ -821,7 +821,7 @@ where
     type Output = Result<(usize, RecvMsgCtrl)>;
 
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        let ref mut inner = self
+        let inner = &mut self
             .get_mut()
             .state
             .as_mut()
@@ -834,14 +834,14 @@ where
                     let mut epoll = Epoll::new()?;
                     epoll.add(&inner.socket, &srt::SRT_EPOLL_OPT::SRT_EPOLL_IN)?;
                     thread::spawn(move || {
-                        if let Ok(_) = epoll.wait(-1) {
+                        if epoll.wait(-1).is_ok() {
                             waker.wake();
                         }
                     });
                     Poll::Pending
                 }
 
-                e => Poll::Ready(Err(e.into())),
+                e => Poll::Ready(Err(e)),
             },
         }
     }
@@ -861,7 +861,7 @@ impl AsyncRead for SrtAsyncStream {
                     let mut epoll = Epoll::new()?;
                     epoll.add(&self.socket, &srt::SRT_EPOLL_OPT::SRT_EPOLL_IN)?;
                     thread::spawn(move || {
-                        if let Ok(_) = epoll.wait(-1) {
+                        if epoll.wait(-1).is_ok() {
                             waker.wake();
                         }
                     });
@@ -892,7 +892,7 @@ impl AsyncWrite for SrtAsyncStream {
                             let mut epoll = Epoll::new()?;
                             epoll.add(&self.socket, &srt::SRT_EPOLL_OPT::SRT_EPOLL_OUT)?;
                             thread::spawn(move || {
-                                if let Ok(_) = epoll.wait(-1) {
+                                if epoll.wait(-1).is_ok() {
                                     waker.wake();
                                 }
                             });
@@ -920,7 +920,7 @@ impl AsyncWrite for SrtAsyncStream {
                     let mut epoll = Epoll::new()?;
                     epoll.add(&self.socket, &srt::SRT_EPOLL_OPT::SRT_EPOLL_OUT)?;
                     thread::spawn(move || {
-                        if let Ok(_) = epoll.wait(-1) {
+                        if epoll.wait(-1).is_ok() {
                             waker.wake();
                         }
                     });
@@ -948,7 +948,7 @@ impl AsyncWrite for SrtAsyncStream {
                     let mut epoll = Epoll::new()?;
                     epoll.add(&self.socket, &srt::SRT_EPOLL_OPT::SRT_EPOLL_OUT)?;
                     thread::spawn(move || {
-                        if let Ok(_) = epoll.wait(-1) {
+                        if epoll.wait(-1).is_ok() {
                             waker.wake();
                         }
                     });
@@ -963,7 +963,7 @@ impl AsyncWrite for SrtAsyncStream {
 
 impl Drop for SrtAsyncStream {
     fn drop(&mut self) {
-        if let Err(_) = self.socket.close() {}
+        if self.socket.close().is_err() {}
     }
 }
 
@@ -990,7 +990,7 @@ impl SrtAsyncListener {
 
 impl Drop for SrtAsyncListener {
     fn drop(&mut self) {
-        if let Err(_) = self.socket.close() {}
+        if self.socket.close().is_err() {}
     }
 }
 
@@ -1021,7 +1021,7 @@ impl Future for AcceptFuture {
                     let mut epoll = Epoll::new()?;
                     epoll.add(&self.socket, &srt::SRT_EPOLL_OPT::SRT_EPOLL_IN)?;
                     thread::spawn(move || {
-                        if let Ok(_) = epoll.wait(-1) {
+                        if epoll.wait(-1).is_ok() {
                             waker.wake();
                         }
                     });
@@ -1059,7 +1059,7 @@ impl Future for ConnectFuture {
                             srt::SRT_EPOLL_OPT::SRT_EPOLL_OUT | srt::SRT_EPOLL_OPT::SRT_EPOLL_ERR;
                         epoll.add(&self.socket.unwrap(), &events)?;
                         thread::spawn(move || {
-                            if let Ok(_) = epoll.wait(-1) {
+                            if epoll.wait(-1).is_ok() {
                                 waker.wake();
                             }
                         });

@@ -53,21 +53,16 @@ impl SrtSocket {
     }
 
     pub fn bind<A: ToSocketAddrs>(self, addrs: A) -> Result<Self> {
-        if let Ok(addrs) = addrs.to_socket_addrs() {
-            for addr in addrs {
-                let os_addr: OsSocketAddr = addr.into();
-                let result = unsafe {
-                    srt::srt_bind(
-                        self.id,
-                        os_addr.as_ptr() as *const sockaddr,
-                        os_addr.len() as i32,
-                    )
-                };
-                return error::handle_result(self, result);
-            }
-        }
-
-        Err(SrtError::SockFail)
+        let addrs = addrs.to_socket_addrs().map_err(|_| SrtError::SockFail)?;
+        let os_addr: OsSocketAddr = addrs.into_iter().next().ok_or(SrtError::NoConn)?.into();
+        let result = unsafe {
+            srt::srt_bind(
+                self.id,
+                os_addr.as_ptr() as *const sockaddr,
+                os_addr.len() as i32,
+            )
+        };
+        error::handle_result(self, result)
     }
 
     pub fn rendezvous<A: ToSocketAddrs>(&self, local: A, remote: A) -> Result<()> {
@@ -121,7 +116,7 @@ impl SrtSocket {
                 os_target.len() as i32,
             )
         };
-        return error::handle_result((), result);
+        error::handle_result((), result)
     }
 
     pub fn listen(&self, backlog: i32) -> Result<()> {
@@ -242,7 +237,6 @@ impl SrtSocket {
                     src_time: NonZeroI64::new(msg_ctl.srctime),
                     pkt_seq: msg_ctl.pktseq,
                     msg_no: msg_ctl.msgno,
-                    _priv: (),
                 },
             ))
         }
@@ -279,11 +273,11 @@ impl SrtSocket {
     }
 }
 
+#[non_exhaustive]
 pub struct RecvMsgCtrl {
     pub src_time: Option<NonZeroI64>,
     pub pkt_seq: i32,
     pub msg_no: i32,
-    _priv: (),
 }
 
 //Public get flag methods
@@ -414,7 +408,7 @@ impl SrtSocket {
                 &mut _optlen as *mut c_int,
             )
         };
-        error::handle_result(linger.l_linger as i32, result)
+        error::handle_result(linger.l_linger, result)
     }
 
     pub fn get_max_reorder_tolerance(&self) -> Result<i32> {
