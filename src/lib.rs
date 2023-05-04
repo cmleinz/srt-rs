@@ -1539,7 +1539,7 @@ mod tests {
         let one_task = async move {
             let mut one = srt::async_builder()
                 .set_file_transmission_type()
-                .rendezvous("127.0.0.1:10000", "127.0.0.2:20000")
+                .rendezvous("127.0.0.1:10000", "127.0.0.1:20000")
                 .expect("fail start rendezvous")
                 .await
                 .expect("fail rendezvous");
@@ -1549,7 +1549,7 @@ mod tests {
         let two_task = async move {
             let mut two = srt::async_builder()
                 .set_file_transmission_type()
-                .rendezvous("127.0.0.2:20000", "127.0.0.1:10000")
+                .rendezvous("127.0.0.1:20000", "127.0.0.1:10000")
                 .expect("fail start rendezvous")
                 .await
                 .expect("fail rendezvous");
