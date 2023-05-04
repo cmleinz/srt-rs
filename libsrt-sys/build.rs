@@ -1,7 +1,4 @@
-use bindgen;
-use cmake;
-
-use std::{env, path::PathBuf, path::Path};
+use std::{env, path::Path, path::PathBuf};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     if cfg!(unix) {
@@ -20,8 +17,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         let lib_dirs = ["lib", "lib64"]
             .iter()
-            .map(|dir| dst_dir.join(dir) )
-            .filter_map(|dir| {if dst_dir.exists() { Some(dir) } else { None }} )
+            .map(|dir| dst_dir.join(dir))
+            .filter_map(|dir| if dst_dir.exists() { Some(dir) } else { None })
             .collect::<Vec<_>>();
 
         if lib_dirs.is_empty() {
