@@ -2,7 +2,7 @@
 name = "libsrt-sys"
 version = "1.4.13"
 authors = ["Hieu Nguyen <nthieu173@gmail.com>"]
-edition = "2018"
+edition = "2021"
 license = "MPL-2.0"
 description = "Bindings for libsrt"
 links = "srt"
